@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +17,20 @@ public class CharModelGenerator : MonoBehaviour
         charmodelcollider.radius = 0.65f;
         charmodelcollider.height = 4.5f;
         Destroy (charmodel.transform.GetComponent<SphereCollider>());
+        
+        GameObject charmodelrighteye = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        charmodelrighteye.transform.parent = charmodel.transform;
+        charmodelrighteye.transform.localPosition = new Vector3(.18f, .07f, .45f);
+        charmodelrighteye.transform.localScale = new Vector3(.2f, .2f, .2f);
+        charmodelrighteye.GetComponent<Renderer>().material.color = new Color(1, 1, 1, 0);
+        Destroy (charmodelrighteye.transform.GetComponent<SphereCollider>());
+        
+        GameObject charmodellefteye = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        charmodellefteye.transform.parent = charmodel.transform;
+        charmodellefteye.transform.localPosition = new Vector3(-.18f, .07f, .45f);
+        charmodellefteye.transform.localScale = new Vector3(.2f, .2f, .2f);
+        charmodellefteye.GetComponent<Renderer>().material.color = new Color(1, 1, 1, 0);
+        Destroy (charmodellefteye.transform.GetComponent<SphereCollider>());
         
         GameObject charmodelneck = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         charmodelneck.transform.parent = charmodel.transform;
