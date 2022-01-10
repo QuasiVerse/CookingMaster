@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,22 +44,51 @@ public class LevelGenerator : MonoBehaviour
         {
             for(int y = 0; y < floorwidth; y++)
             {
-                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                cube.AddComponent(typeof(BoxCollider));
+                GameObject floordesign = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                floordesign.AddComponent(typeof(BoxCollider));
+                if(x%2 == 0 || y%2 == 1){
+                    floordesign.GetComponent<Renderer>().material.color = new Color(.6f, .6f, .6f, 0);
+                    floordesign.transform.position = new Vector3(x, 0, y);
+                }
                 if(x == 0 || x == floorlength - 1|| y == 0 || y == floorwidth - 1){
-                    cube.GetComponent<Renderer>().material.color = new Color(.4f, .6f, .4f, 0);
-                    cube.transform.position = new Vector3(x, .75f, y);
+                    floordesign.GetComponent<Renderer>().material.color = new Color(.4f, .6f, .4f, 0);
+                    floordesign.transform.position = new Vector3(x, .75f, y);
                 }
                 if(x != 0 && x != floorlength - 1 && y != 0 && y != floorwidth - 1){
-                    cube.GetComponent<Renderer>().material.color = new Color(.8f, .8f, .8f, 0);
-                    cube.transform.position = new Vector3(x, 0, y);
+                    if(x%2 == 0 && y%2 == 1){
+                        floordesign.GetComponent<Renderer>().material.color = new Color(.6f, .6f, .6f, 0);
+                        floordesign.transform.position = new Vector3(x * 1.05f, 0, y * 1.05f);
+                    }
+                    if(x%2 == 1 && y%2 == 1){
+                        floordesign.GetComponent<Renderer>().material.color = new Color(.8f, .8f, .8f, 0);
+                        floordesign.transform.position = new Vector3(x * 1.05f, 0, y * 1.05f);
+                    }
+                    if(x%2 == 0 && y%2 == 0){
+                        floordesign.GetComponent<Renderer>().material.color = new Color(.8f, .8f, .8f, 0);
+                        floordesign.transform.position = new Vector3(x * 1.05f, 0, y * 1.05f);
+                    }
+                    if(x%2 == 1 && y%2 == 0){
+                        floordesign.GetComponent<Renderer>().material.color = new Color(.6f, .6f, .6f, 0);
+                        floordesign.transform.position = new Vector3(x * 1.05f, 0, y * 1.05f);
+                    }
                 }
                 if(x == 0 && y > 0 && y < floorwidth - 1){
-                    cube.GetComponent<Renderer>().material.color = new Color(.5f, .5f, .5f, 0);
-                    cube.transform.position = new Vector3(x, .75f, y);
+                    floordesign.GetComponent<Renderer>().material.color = new Color(.5f, .5f, .5f, 0);
+                    floordesign.transform.position = new Vector3(x, .75f, y);
                 }
             }
         }
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.transform.position = new Vector3(floorlength/2, .55f, floorwidth/2);
+        floor.transform.localScale = new Vector3(floorlength * .1f, 1, floorwidth * .1f);
+        Destroy (floor.GetComponent<Renderer>());
+        
+        GameObject grout = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        grout.transform.position = new Vector3(floorlength/2, .42f, floorwidth/2);
+        grout.transform.GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 0);
+        grout.transform.localScale = new Vector3(floorlength * .1f, 1, floorwidth * .1f);
+        Destroy (grout.GetComponent<MeshCollider>());
+
         
         //Create Chopping Boards
         GameObject rightchoppingtable = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -81,37 +110,37 @@ public class LevelGenerator : MonoBehaviour
         //Place Right Chopping Board Models
         righteggplantmodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         righteggplantmodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 + 2);
-        righteggplantmodel.transform.eulerAngles = new Vector3(0, 90, 90);
+        righteggplantmodel.transform.localEulerAngles = new Vector3(0, 90, 90);
         righteggplantmodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         righteggplantmodel.GetComponent<Renderer>().material.color = new Color(.6f, .2f, .6f, 0);
         
         righttomatomodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         righttomatomodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 + 2);
-        righttomatomodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        righttomatomodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         righttomatomodel.transform.localScale = new Vector3(.3f, .3f, .3f);
         righttomatomodel.GetComponent<Renderer>().material.color = new Color(1 ,0, 0, 0);
         
         rightzuccinimodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         rightzuccinimodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 + 2);
-        rightzuccinimodel.transform.eulerAngles = new Vector3(0, 90, 90);
+        rightzuccinimodel.transform.localEulerAngles = new Vector3(0, 90, 90);
         rightzuccinimodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         rightzuccinimodel.GetComponent<Renderer>().material.color = new Color(.2f, .4f, .2f, 0);
 
         rightpotatomodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         rightpotatomodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 + 2);
-        rightpotatomodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        rightpotatomodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         rightpotatomodel.transform.localScale = new Vector3(.3f, .3f, .3f);
         rightpotatomodel.GetComponent<Renderer>().material.color = new Color(.8f, .8f, .4f, 0);
         
         rightcornmodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         rightcornmodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 + 2);
-        rightcornmodel.transform.eulerAngles = new Vector3(0, 90, 90);
+        rightcornmodel.transform.localEulerAngles = new Vector3(0, 90, 90);
         rightcornmodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         rightcornmodel.GetComponent<Renderer>().material.color = new Color(.9f, .9f, .1f, 0);
         
         rightlettucemodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         rightlettucemodel.transform.position = new Vector3(floorlength - 1, 1.6f, floorwidth/2 + 2);
-        rightlettucemodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        rightlettucemodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         rightlettucemodel.transform.localScale = new Vector3(.5f, .4f, .5f);
         rightlettucemodel.GetComponent<Renderer>().material.color = new Color(.22f, .5f, .22f, 0);
         
@@ -125,37 +154,37 @@ public class LevelGenerator : MonoBehaviour
         //Place Left Chopping Board Models
         lefteggplantmodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         lefteggplantmodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 - 2);
-        lefteggplantmodel.transform.eulerAngles = new Vector3(0, 90, 90);
+        lefteggplantmodel.transform.localEulerAngles = new Vector3(0, 90, 90);
         lefteggplantmodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         lefteggplantmodel.GetComponent<Renderer>().material.color = new Color(.6f, .2f, .6f, 0);
         
         lefttomatomodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         lefttomatomodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 - 2);
-        lefttomatomodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        lefttomatomodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         lefttomatomodel.transform.localScale = new Vector3(.3f, .3f, .3f);
         lefttomatomodel.GetComponent<Renderer>().material.color = new Color(1 ,0, 0, 0);
         
         leftzuccinimodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         leftzuccinimodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 - 2);
-        leftzuccinimodel.transform.eulerAngles = new Vector3(0, 90, 90);
+        leftzuccinimodel.transform.localEulerAngles = new Vector3(0, 90, 90);
         leftzuccinimodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         leftzuccinimodel.GetComponent<Renderer>().material.color = new Color(.2f, .4f, .2f, 0);
 
         leftpotatomodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         leftpotatomodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 - 2);
-        leftpotatomodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        leftpotatomodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         leftpotatomodel.transform.localScale = new Vector3(.3f, .3f, .3f);
         leftpotatomodel.GetComponent<Renderer>().material.color = new Color(.8f, .8f, .4f, 0);
         
         leftcornmodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         leftcornmodel.transform.position = new Vector3(floorlength - 1, 1.55f, floorwidth/2 - 2);
-        leftcornmodel.transform.eulerAngles = new Vector3(0, 90, 90);
+        leftcornmodel.transform.localEulerAngles = new Vector3(0, 90, 90);
         leftcornmodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         leftcornmodel.GetComponent<Renderer>().material.color = new Color(.9f, .9f, .1f, 0);
         
         leftlettucemodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         leftlettucemodel.transform.position = new Vector3(floorlength - 1, 1.6f, floorwidth/2 - 2);
-        leftlettucemodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        leftlettucemodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         leftlettucemodel.transform.localScale = new Vector3(.5f, .4f, .5f);
         leftlettucemodel.GetComponent<Renderer>().material.color = new Color(.22f, .5f, .22f, 0);
         
@@ -259,37 +288,37 @@ public class LevelGenerator : MonoBehaviour
         //Place Tables
         GameObject eggplanttablemodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         eggplanttablemodel.transform.position = new Vector3(floorlength/2 - 2, 1.55f, floorwidth - 1);
-        eggplanttablemodel.transform.eulerAngles = new Vector3(0, 25, 90);
+        eggplanttablemodel.transform.localEulerAngles = new Vector3(0, 25, 90);
         eggplanttablemodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         eggplanttablemodel.GetComponent<Renderer>().material.color = new Color(.6f, .2f, .6f, 0);
         
         GameObject tomatotablemodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         tomatotablemodel.transform.position = new Vector3(floorlength/2, 1.55f, floorwidth - 1);
-        tomatotablemodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        tomatotablemodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         tomatotablemodel.transform.localScale = new Vector3(.3f, .3f, .3f);
         tomatotablemodel.GetComponent<Renderer>().material.color = new Color(1 ,0, 0, 0);
         
         GameObject zuccinitablemodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         zuccinitablemodel.transform.position = new Vector3(floorlength/2 + 2, 1.55f, floorwidth - 1);
-        zuccinitablemodel.transform.eulerAngles = new Vector3(0, 25, 90);
+        zuccinitablemodel.transform.localEulerAngles = new Vector3(0, 25, 90);
         zuccinitablemodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         zuccinitablemodel.GetComponent<Renderer>().material.color = new Color(.2f, .4f, .2f, 0);
 
         GameObject potatotablemodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         potatotablemodel.transform.position = new Vector3(floorlength/2 - 2, 1.55f, 0);
-        potatotablemodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        potatotablemodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         potatotablemodel.transform.localScale = new Vector3(.3f, .3f, .3f);
         potatotablemodel.GetComponent<Renderer>().material.color = new Color(.8f, .8f, .4f, 0);
         
         GameObject corntablemodel = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         corntablemodel.transform.position = new Vector3(floorlength/2, 1.55f, 0);
-        corntablemodel.transform.eulerAngles = new Vector3(0, 25, 90);
+        corntablemodel.transform.localEulerAngles = new Vector3(0, 25, 90);
         corntablemodel.transform.localScale = new Vector3(.3f, .5f, .3f);
         corntablemodel.GetComponent<Renderer>().material.color = new Color(.9f, .9f, .1f, 0);
         
         GameObject lettucetablemodel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         lettucetablemodel.transform.position = new Vector3(floorlength/2 + 2, 1.6f, 0);
-        lettucetablemodel.transform.eulerAngles = new Vector3(0, 0, 0);
+        lettucetablemodel.transform.localEulerAngles = new Vector3(0, 0, 0);
         lettucetablemodel.transform.localScale = new Vector3(.5f, .4f, .5f);
         lettucetablemodel.GetComponent<Renderer>().material.color = new Color(.22f, .5f, .22f, 0);
         
