@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +26,12 @@ public class PlayerAnimator : MonoBehaviour
             leftleg.transform.localEulerAngles = new Vector3(0, 0, 0);
         }
         if(animtype == "Chop"){
-        
+            if(cycle == "Up"){
+                rightarm.transform.Rotate(new Vector3(13, 0, 0), Space.Self);
+            }
+            if(cycle == "Down"){
+                rightarm.transform.Rotate(new Vector3(-13, 0, 0), Space.Self);
+            }
         }
     }
 }
