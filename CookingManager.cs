@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +7,7 @@ public class CookingManager : MonoBehaviour
     
     private Canvas managercanvas;
     private GenerateHUD canvasgenerator;
+    
     void Start()
     {
         //Procedurally Generate Scene
@@ -20,11 +21,12 @@ public class CookingManager : MonoBehaviour
         light.transform.GetComponent<Light>().type = LightType.Point;
         light.transform.GetComponent<Light>().range = 200;
         light.transform.position = new Vector3(LevelGenerator.floorlength/2, 9, LevelGenerator.floorwidth/2);
+        
+        //Generate HUD
         canvasgenerator = this.gameObject.AddComponent<GenerateHUD>();
         canvasgenerator.GenerateCanvas();
         managercanvas = canvasgenerator.managercanvas;
         
-        PlayerGenerator.playerone.SetActive(true);
     }
 
     void Update()
