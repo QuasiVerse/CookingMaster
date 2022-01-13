@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +13,10 @@ public class GenerateHUD : MonoBehaviour
     private GuestManager guestmanager;
     
     private Text choosenumberplayers;
+    
+    public Button resetbutton;
+    public Image resetbuttonimage;
+    public Text resetbuttontext;
     
     public Button chooseonebutton;
     public Image chooseonebuttonimage;
@@ -91,6 +95,35 @@ public class GenerateHUD : MonoBehaviour
         }
     }
     
+    public void Open()
+    {
+        playeronescoretext.enabled = false;
+        playeronetimertext.enabled = false;
+        playertwoscoretext.enabled = false;
+        playertwotimertext.enabled = false;
+        resetbutton.enabled = false;
+        resetbuttonimage.enabled = false;
+        resetbuttontext.enabled = false;
+        winner.enabled = false;
+        highscoreone.enabled = false;
+        highscoretwo.enabled = false;
+        highscorethree.enabled = false;
+        highscorefour.enabled = false;
+        highscorefive.enabled = false;
+        highscoresix.enabled = false;
+        highscoreseven.enabled = false;
+        highscoreeight.enabled = false;
+        highscorenine.enabled = false;
+        highscoreten.enabled = false;
+        chooseonebuttonimage.enabled = true;
+        chooseonebutton.enabled = true;
+        chooseonebuttontext.enabled = true;
+        choosetwobuttonimage.enabled = true;
+        choosetwobutton.enabled = true;
+        choosetwobuttontext.enabled = true;
+        choosenumberplayers.enabled = true;
+    }
+    
     public void ChooseOnePlayer()
     {
         chooseonebuttonimage.enabled = false;
@@ -152,6 +185,39 @@ public class GenerateHUD : MonoBehaviour
         guesttimersrect = new List<RectTransform>();
         guesttimerslidersrect = new List<RectTransform>();
         
+        //Reset UI
+        GameObject resetbuttonobject = new GameObject();
+        resetbuttonobject.transform.parent = managercanvasobject.transform;
+        resetbuttonimage = resetbuttonobject.AddComponent<Image>();
+        resetbuttonimage.sprite = circlesprite;
+        resetbutton = resetbuttonobject.AddComponent<Button>();
+        resetbutton.onClick.AddListener(Open);
+        RectTransform recttransform = resetbutton.GetComponent<RectTransform>();
+        recttransform.localPosition = new Vector3(-500, 200, 0);
+        recttransform.sizeDelta = new Vector2(200, 200);
+        recttransform.anchorMin = new Vector2(.5f, .5f);
+        recttransform.anchorMax = new Vector2(.5f, .5f);
+        recttransform.pivot = new Vector2(0, 1); 
+        Material newmaterial = new Material(Shader.Find("Legacy Shaders/Transparent/Cutout/Soft Edge Unlit"));
+        newmaterial.SetColor("_Color", new Color(.5f, .5f, .5f, 1));
+        resetbuttonimage.material = newmaterial;
+        resetbuttonimage.enabled = false;
+        resetbutton.enabled = false;
+        
+        GameObject resetbuttontextobject = new GameObject();
+        resetbuttontextobject.transform.parent = resetbuttonobject.transform;
+        resetbuttontext = resetbuttontextobject.AddComponent<Text>();
+        resetbuttontext.text = "RESET";
+        resetbuttontext.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
+        resetbuttontext.fontSize = 25;
+        recttransform = resetbuttontext.GetComponent<RectTransform>();
+        recttransform.anchorMin = new Vector2(0, 1);
+        recttransform.anchorMax = new Vector2(0, 1);
+        recttransform.pivot = new Vector2(0, 1);  
+        recttransform.localPosition = new Vector3(60, -85, 0);
+        recttransform.sizeDelta = new Vector2(200, 200);
+        resetbuttontext.enabled = false;
+        
         //Choose Number Of Players
         GameObject choosenumberplayersobject = new GameObject();
         choosenumberplayersobject.transform.parent = managercanvasobject.transform;
@@ -159,7 +225,7 @@ public class GenerateHUD : MonoBehaviour
         choosenumberplayers.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
         choosenumberplayers.fontSize = 15;
         choosenumberplayers.text = "CHOOSE NUMBER OF PLAYERS";
-        RectTransform recttransform = choosenumberplayers.GetComponent<RectTransform>();
+        recttransform = choosenumberplayers.GetComponent<RectTransform>();
         recttransform.anchorMin = new Vector2(.5f, 1);
         recttransform.anchorMax = new Vector2(.5f, 1);
         recttransform.pivot = new Vector2(.5f, .5f); 
@@ -178,7 +244,7 @@ public class GenerateHUD : MonoBehaviour
         recttransform.anchorMin = new Vector2(.5f, .5f);
         recttransform.anchorMax = new Vector2(.5f, .5f);
         recttransform.pivot = new Vector2(0, 1); 
-        Material newmaterial = new Material(Shader.Find("Legacy Shaders/Transparent/Cutout/Soft Edge Unlit"));
+        newmaterial = new Material(Shader.Find("Legacy Shaders/Transparent/Cutout/Soft Edge Unlit"));
         newmaterial.SetColor("_Color", new Color(.5f, .5f, .5f, 1));
         chooseonebuttonimage.material = newmaterial;
         
