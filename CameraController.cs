@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
     {
         distance = Vector3.Distance (playeronepos.transform.position, playertwopos.transform.position);
         midPoint = (playeronepos.position + playertwopos.position) * 0.5f;
-        midPoint.y = .8f * distance + 4f;
+        midPoint.y = .5f * distance + 7f;
         cam.transform.position = midPoint;
     }
 }
