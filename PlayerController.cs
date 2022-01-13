@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private CookingManager manager;
+    private GuestManager guestmanager;
 
     public int playernumber;
     
@@ -29,6 +31,7 @@ public class PlayerController : MonoBehaviour
     private bool playeronemoveinitialized;
     private bool playeronechopping;
     private float playeronechoppingtimer;
+    private float playeronechoppingdurationtimer;
     private bool playeronechoppingshift;
     private float playeronechoppinginitialtimer;
     private bool playeronechoppinginitialized;
@@ -42,6 +45,7 @@ public class PlayerController : MonoBehaviour
     private bool playertwomoveinitialized;
     private bool playertwochopping;
     private float playertwochoppingtimer;
+    private float playertwochoppingdurationtimer;
     private bool playertwochoppingshift;
     private float playertwochoppinginitialtimer;
     private bool playertwochoppinginitialized;
@@ -50,6 +54,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody playertworigidbody;
     
     private float movespeed = 15f;
+    private float origmovespeed;
     
     public string currentcollider;
     
@@ -57,16 +62,37 @@ public class PlayerController : MonoBehaviour
     
     private float pickuptimer;
     
+    public float speedboosttimer;
+    
+    private bool playerplateswapped;
+    
+    private bool ordercorrect;
+    
+    private List<bool> listused;
+    
     void Start(){
+        manager = GameObject.Find("Main Camera").GetComponent<CookingManager>();
+        guestmanager = GameObject.Find("Main Camera").GetComponent<GuestManager>();
         playerone = PlayerGenerator.playerone;
         playertwo = PlayerGenerator.playertwo;
         
         playeronerigidbody = playerone.GetComponent<Rigidbody>();
         playertworigidbody = playertwo.GetComponent<Rigidbody>();
+        
+        origmovespeed = movespeed;
     }
     
     void FixedUpdate()
     {
+        speedboosttimer -= .1f;
+        if(speedboosttimer > 0)
+        {
+            movespeed = origmovespeed * 2;
+        }
+        if(speedboosttimer <= 0)
+        {
+            movespeed = origmovespeed;
+        }
         if(playernumber == 1)
         {
             //Player One Movement
@@ -174,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
             //Player One Chopping
             playeronechopping = false;
-            if (Input.GetKey(KeyCode.E) && !playeronemoving)
+            if (Input.GetKey(KeyCode.E) && !playeronemoving && playerinventory.playerchoppingtableitem != "")
             {
                 playeronechopping = true;
             }
@@ -183,9 +209,17 @@ public class PlayerController : MonoBehaviour
                 playeronechopping = false;
             }
 
-            //Player One Chopping Anim
-            if(playeronechopping && currentcollider == "Player One Chopping")
+            if(playeronechopping && currentcollider == "Player One Chopping Table")
             {
+                //Player One Chopping Interactions
+                playeronechoppingdurationtimer += .1f;
+                if(playeronechoppingdurationtimer > 10){
+                    playerinventory.playerchoppedtableinventory.Add(playerinventory.playerchoppingtableitem);
+                    playerinventory.playerchoppingtableitem = "";
+                    playeronechoppingdurationtimer = 0;
+                }
+                
+                //Player One Chopping Anim
                 playerone.transform.localEulerAngles = new Vector3(0, 90, 0);
                 playeronechoppingtimer += .1f;
                 playeronechoppinginitialtimer += .1f;
@@ -215,6 +249,8 @@ public class PlayerController : MonoBehaviour
                 playeronechoppinginitialized = false;
                 playeronechoppingshift = false;
             } 
+            
+            if(playeronechopping)
 
             //Player One Standing Anim Double Check To Prevent Overlapping Animations
             if(!playeronemoving && !playeronechopping)
@@ -223,26 +259,118 @@ public class PlayerController : MonoBehaviour
             }
             
             //Player One Inventory Interactions
-            
+            playerplateswapped = false;
             pickuptimer += .1f;
             if(Input.GetKey(KeyCode.Q) && pickuptimer >= 1f)
             {
                 pickuptimer = 0;
                 if(currentcollider != "")
                 {   
-                    if(playerinventory.playerinventory.Count < 2)
+                
+                    if(currentcollider == "Eggplant" || currentcollider == "Tomato" || currentcollider == "Zuccini" || currentcollider == "Potato" || currentcollider == "Corn" || currentcollider == "Lettuce")
                     {
-                        if(currentcollider == "Eggplant" || currentcollider == "Tomato" || currentcollider == "Zuccini" || currentcollider == "Potato" || currentcollider == "Corn" || currentcollider == "Lettuce")
-                        {
+                         if(playerinventory.playerinventory.Count < 2)
+                         {   
                             playerinventory.playerinventory.Add(currentcollider);
+                         }
+                    }
+                    if(currentcollider == "Player One Chopping Table" && playerinventory.playerchoppingtableitem == "" && playerinventory.playerchoppedtableinventory.Count < 3 && playerinventory.playerinventory.Count != 0)
+                    {
+                        playerinventory.playerchoppingtableitem = playerinventory.playerinventory[0];
+                        playerinventory.playerinventory.RemoveAt(0);
+                    }
+                    if(currentcollider == "Player One Chopping Table" && playerinventory.playerplateitem != "" && playerinventory.playerchoppedtableinventory.Count != 0 && playerinventory.playerchoppedinventory.Count == 0)
+                    {
+                        playerinventory.playerchoppedinventory = playerinventory.playerchoppedtableinventory;
+                        playerinventory.playerchoppedtableinventory = new List<string>();
+                    }
+                    if(currentcollider == "Player One Plate")
+                    {
+                        if(playerinventory.playerplateitem == "" && playerinventory.playerinventory.Count > 0)
+                        {
+                            playerinventory.playerplateitem = playerinventory.playerinventory[0];
+                            playerinventory.playerinventory.RemoveAt(0);
+                            playerplateswapped = true;
+                        }
+                        if(playerinventory.playerplateitem != "" && playerinventory.playerinventory.Count < 2 && playerplateswapped == false)
+                        {
+                            playerinventory.playerinventory.Add(playerinventory.playerplateitem);
+                            playerinventory.playerplateitem = "";
                         }
                     }
-                    if(playerinventory.playerinventory.Count > 0)
+                    if(currentcollider == "Trash Can")
                     {
-                        if(currentcollider == "Player One Chopping")
+                        manager.Report(-1, 1, playerinventory.playerchoppedinventory.Count * 5);
+                        playerinventory.playerchoppedinventory = new List<string>();
+                    }
+                    if(currentcollider == "Guest One")
+                    {   
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[0]);
+                        if(ordercorrect == true)
                         {
-                            playerinventory.playerchoppingtableinventory.Add(playerinventory.playerinventory[0]);
-                            playerinventory.playerinventory.RemoveAt(0);
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(1, 0);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(1, 0);
+                        }
+                    }
+                    if(currentcollider == "Guest Two")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[1]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(1, 1);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(1, 1);
+                        }
+                    }
+                    if(currentcollider == "Guest Three")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[2]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(1, 2);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(1, 2);
+                        }
+                    }
+                    if(currentcollider == "Guest Four")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[3]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(1, 3);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(1, 3);
+                        }
+                    }
+                    if(currentcollider == "Guest Five")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[4]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(1, 4);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(1, 4);
                         }
                     }
                 }
@@ -356,7 +484,7 @@ public class PlayerController : MonoBehaviour
 
             //Player Two Chopping
             playertwochopping = false;
-            if (Input.GetKey(KeyCode.O) && !playertwomoving)
+            if (Input.GetKey(KeyCode.O) && !playertwomoving && playerinventory.playerchoppingtableitem != "")
             {
                 playertwochopping = true;
             }
@@ -365,9 +493,17 @@ public class PlayerController : MonoBehaviour
                 playertwochopping = false;
             }
 
-            //Player Two Chopping Anim
-            if(playertwochopping && currentcollider == "Player Two Chopping")
+            if(playertwochopping && currentcollider == "Player Two Chopping Table")
             {
+                //Player Two Chopping Interactions
+                playertwochoppingdurationtimer += .1f;
+                if(playertwochoppingdurationtimer > 10){
+                    playerinventory.playerchoppedtableinventory.Add(playerinventory.playerchoppingtableitem);
+                    playerinventory.playerchoppingtableitem = "";
+                    playertwochoppingdurationtimer = 0;
+                }
+                
+                //Player Two Chopping Anim
                 playertwo.transform.localEulerAngles = new Vector3(0, 90, 0);
                 playertwochoppingtimer += .1f;
                 playertwochoppinginitialtimer += .1f;
@@ -392,23 +528,184 @@ public class PlayerController : MonoBehaviour
             if(!playertwochopping)
             {
                 playertwochoppingtimer = 0f;
-
                 playertwochoppinginitialtimer = 0f;
                 playertwochoppinginitialtimer = 0f;
                 playertwochoppinginitialized = false;
                 playertwochoppingshift = false;
             } 
+            
+            if(playertwochopping)
 
             //Player Two Standing Anim Double Check To Prevent Overlapping Animations
-            if(!playertwomoving && !playertwochopping){
+            if(!playertwomoving && !playertwochopping)
+            {
                 PlayerAnimator.AnimatePlayer("Stand", "", playertworightarm, playertwoleftarm, playertworightleg, playertwoleftleg);
             }
+            
+            //Player Two Inventory Interactions
+            playerplateswapped = false;
+            pickuptimer += .1f;
+            if(Input.GetKey(KeyCode.U) && pickuptimer >= 1f)
+            {
+                pickuptimer = 0;
+                if(currentcollider != "")
+                {   
+                
+                    if(currentcollider == "Eggplant" || currentcollider == "Tomato" || currentcollider == "Zuccini" || currentcollider == "Potato" || currentcollider == "Corn" || currentcollider == "Lettuce")
+                    {
+                         if(playerinventory.playerinventory.Count < 2)
+                         {   
+                            playerinventory.playerinventory.Add(currentcollider);
+                         }
+                    }
+                    if(currentcollider == "Player Two Chopping Table" && playerinventory.playerchoppingtableitem == "" && playerinventory.playerchoppedtableinventory.Count < 3 && playerinventory.playerinventory.Count != 0)
+                    {
+                        playerinventory.playerchoppingtableitem = playerinventory.playerinventory[0];
+                        playerinventory.playerinventory.RemoveAt(0);
+                    }
+                    if(currentcollider == "Player Two Chopping Table" && playerinventory.playerplateitem != "" && playerinventory.playerchoppedtableinventory.Count != 0 && playerinventory.playerchoppedinventory.Count == 0)
+                    {
+                        playerinventory.playerchoppedinventory = playerinventory.playerchoppedtableinventory;
+                        playerinventory.playerchoppedtableinventory = new List<string>();
+                    }
+                    if(currentcollider == "Player Two Plate")
+                    {
+                        if(playerinventory.playerplateitem == "" && playerinventory.playerinventory.Count > 0)
+                        {
+                            playerinventory.playerplateitem = playerinventory.playerinventory[0];
+                            playerinventory.playerinventory.RemoveAt(0);
+                            playerplateswapped = true;
+                        }
+                        if(playerinventory.playerplateitem != "" && playerinventory.playerinventory.Count < 2 && playerplateswapped == false)
+                        {
+                            playerinventory.playerinventory.Add(playerinventory.playerplateitem);
+                            playerinventory.playerplateitem = "";
+                        }
+                    }
+                    if(currentcollider == "Trash Can")
+                    {
+                        manager.Report(-1, 2, playerinventory.playerchoppedinventory.Count * 5);
+                        playerinventory.playerchoppedinventory = new List<string>();
+                    }
+                    if(currentcollider == "Guest One")
+                    {   
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[0]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(2, 0);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(2, 0);
+                        }
+                    }
+                    if(currentcollider == "Guest Two")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[1]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(2, 1);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(2, 1);
+                        }
+                    }
+                    if(currentcollider == "Guest Three")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[2]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(2, 2);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(2, 2);
+                        }
+                    }
+                    if(currentcollider == "Guest Four")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[3]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(2, 3);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(2, 3);
+                        }
+                    }
+                    if(currentcollider == "Guest Five")
+                    {
+                        ordercorrect = CompareIngredients(playerinventory.playerchoppedinventory, guestmanager.guestorders[4]);
+                        if(ordercorrect == true)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.FulfillOrder(2, 4);
+                        }
+                        if(ordercorrect == false)
+                        {
+                            playerinventory.playerchoppedinventory = new List<string>();
+                            guestmanager.MixedOrder(2, 4);
+                        }
+                    }
+                }
+            }
         }
+    }
+    
+    public bool CompareIngredients(List<string> listone, List<string> listtwo) 
+    {
+    
+        if(listone.Count != listtwo.Count)
+        {
+            return false;
+        }
+        listused = new List<bool>();
+        for(int x = 0; x < listtwo.Count; x++)
+        {
+            listused.Add(false);
+        }
+        for(int n = 0; n < listone.Count; n++) 
+        {
+            bool found = false;
+            for(int m = 0; m < listtwo.Count; m++) 
+            {
+                if(listone[n] == listtwo[m] && listused[m] != true) 
+                {
+                    listused[m] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                return false;
+            }
+        }
+
+        return true;
     }
     
     void OnTriggerEnter(Collider collider)
     {
         currentcollider = collider.name;
+        
+        if(collider.name == "Player One Pickup" && playernumber == 1)
+        {
+            collider.transform.GetComponent<Pickup>().UsePickup(1, this);
+        }
+        if(collider.name == "Player Two Pickup" && playernumber == 2)
+        {
+            collider.transform.GetComponent<Pickup>().UsePickup(2, this);
+        }
     }
     
     void OnTriggerExit(Collider collider)
