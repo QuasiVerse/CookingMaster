@@ -737,6 +737,7 @@ public class GenerateHUD : MonoBehaviour
         playertwoslottwolettuce.material = newmaterial;
         playertwoslottwolettuce.enabled = false;
         
+        //Guest Timers
         GameObject guestonetimerobject = new GameObject();
         guestonetimerobject.name = "Guest One Timer";
         guestonetimerobject.transform.parent = managercanvasobject.transform;
