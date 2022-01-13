@@ -16,7 +16,7 @@ public class CookingManager : MonoBehaviour
     
     public bool playersinitiated;
     
-    public float playertime = 50;
+    public float playertime = 250;
     
     public float playeronescore;
     public float playertwoscore;
@@ -43,6 +43,10 @@ public class CookingManager : MonoBehaviour
     private Text highscoreeight;
     private Text highscorenine;
     private Text highscoreten;
+    
+    private Button resetbutton;
+    private Image resetbuttonimage;
+    private Text resetbuttontext;
     
     public bool open = false;
     
@@ -89,6 +93,10 @@ public class CookingManager : MonoBehaviour
         highscoreeight = canvasgenerator.highscoreeight;
         highscorenine = canvasgenerator.highscorenine;
         highscoreten = canvasgenerator.highscoreten;
+        
+        resetbutton = canvasgenerator.resetbutton;
+        resetbuttonimage = canvasgenerator.resetbuttonimage;
+        resetbuttontext = canvasgenerator.resetbuttontext;
 
     }
 
@@ -148,6 +156,7 @@ public class CookingManager : MonoBehaviour
             playertwoscore += expense * positive;
         }
     }
+
     
     void Close(int playernumber, float winnerscore)
     {
@@ -155,6 +164,9 @@ public class CookingManager : MonoBehaviour
         playeronetimertext.enabled = false;
         playertwoscoretext.enabled = false;
         playertwotimertext.enabled = false;
+        resetbutton.enabled = true;
+        resetbuttonimage.enabled = true;
+        resetbuttonimage.enabled = false;
         winner.enabled = true;
         highscoreone.enabled = true;
         highscoretwo.enabled = true;
@@ -173,6 +185,7 @@ public class CookingManager : MonoBehaviour
                 highscores.Insert(x, winnerscore);
             }
         }
+        winner.text = "Player " + playernumber.ToString() + ": " + winnerscore.ToString();
         highscoreone.text = highscores[0].ToString();
         highscoretwo.text = highscores[1].ToString();
         highscorethree.text = highscores[2].ToString();
